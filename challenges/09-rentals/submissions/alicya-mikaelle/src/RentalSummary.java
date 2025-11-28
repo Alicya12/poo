@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.io.FileInputStream;
 import java.util.Properties;
+import java.io.FileWriter;
 
 public class RentalSummary {
 
@@ -41,18 +42,28 @@ public class RentalSummary {
             stmt.setDouble(1, minimo);
             ResultSet rs = stmt.executeQuery();
 
+            // ---------- GERAR CSV ----------
+            FileWriter csv = new FileWriter("rentals.csv");
+            csv.write("first_name,last_name,total\n");
+
             System.out.println("Clientes que gastaram acima de " + minimo + ":");
 
             while (rs.next()) {
-                System.out.println(
-                    rs.getString("first_name") + " " +
-                    rs.getString("last_name") + " -> R$ " +
-                    rs.getDouble("total")
-                );
+                String fname = rs.getString("first_name");
+                String lname = rs.getString("last_name");
+                double total = rs.getDouble("total");
+
+                System.out.println(fname + " " + lname + " -> R$ " + total);
+
+                csv.write(fname + "," + lname + "," + total + "\n");
             }
+
+            csv.close();
+            System.out.println("\nArquivo CSV gerado com sucesso: rentals.csv");
 
         } catch (Exception e) {
             System.out.println("Erro no banco: " + e.getMessage());
         }
     }
 }
+
